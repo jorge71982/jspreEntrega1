@@ -1,46 +1,109 @@
-// Función para calcular el descuento
-function calcularDescuento(cantidadSolicitada) {
-  let cantidad1 = 5;
-  let porcentaje1 = 5;
-  let cantidad2 = 10;
-  let porcentaje2 = 7.5;
-  let cantidad3 = 15;
-  let porcentaje3 = 10;
-
-  let descuento = 0;
-
-  for (let i = 1; i <= 3; i++) {
-    let cantidad = eval("cantidad" + i);
-    let porcentaje = eval("porcentaje" + i);
-    if (cantidadSolicitada >= cantidad) {
-      descuento = porcentaje;
-    }
+// clase de productos.
+class Producto {
+  constructor(nombre, precio, cantidad, descuento = 0) {
+    this.nombre = nombre;
+    this.precio = precio;
+    this.cantidad = cantidad;
+    this.descuento = descuento;
   }
+}
+// catalogo de productos.
+let catalogo = [
+  new Producto("Lampara led 50W E27", 1948, 1),
+  new Producto("Lampara led 50W E27 X 5 unidades", 1948, 5, 0.1),
+  new Producto("Lampara led 10W C/bateria Emerg. E27", 2076, 1),
+  new Producto(
+    "Lampara led 10W C/bateria Emerg. E27 X 5 unidades",
+    2076,
+    5,
+    0.1
+  ),
+  new Producto("Portalampara ceramico E27", 400, 1),
+  new Producto("Portalampara ceramico E27 X 10 unidades", 400, 10, 0.15),
+  new Producto("Lampara incandescente filamento 500W E40", 1999, 1),
+  new Producto(
+    "Lampara incandescente filamento 500W E40 X 5 unidades",
+    1999,
+    5,
+    0.1
+  ),
+  new Producto("Lampara led E40 150 W", 10262, 1),
+  new Producto("Lampara led E40 150 W X 5 unidades", 10262, 5, 0.08),
+];
 
-  return descuento;
+// Mostrar los productos y precios.
+function mostrarCatalogo() {
+  console.log("Productos disponibles:");
+  catalogo.forEach((producto, index) => {
+    console.log(`${index + 1}. ${producto.nombre} - ${producto.precio} `);
+  });
 }
 
-// Variables de cantidad y precio unitario
-let cantidadSolicitada = Number(
-  prompt("Ingresa la cantidad de este producto que deseas comprar")
-);
-let precioUnitario = 100;
+mostrarCatalogo();
 
-// Verificar si la cantidad ingresada es válida
-if (isNaN(cantidadSolicitada) || cantidadSolicitada <= 0) {
-  console.log("Error: ingresa una cantidad válida.");
-} else {
-  // Calcular el descuento en base a la cantidad solicitada
-  let descuentoFinal = calcularDescuento(cantidadSolicitada);
+// Carrito de compras.
+let carrito = [];
 
-  // Calculo del precio total con el descuento aplicado
-  let precioTotal = cantidadSolicitada * precioUnitario * (1 - descuentoFinal / 100);
-  let ahorrado = cantidadSolicitada * precioUnitario - precioTotal;
-  let iva = precioTotal * 0.21;
-  let precioIva = precioTotal * 1.21;
+// Agregar productos al carrito.
+function agregarProductos() {
+  while (true) {
+    //Pedir seleccion de producto.
+    let seleccion = Number(
+      prompt("Seleccione el numero del producto deseado: ")
+    );
 
-  console.log("Precio total con descuento= " + precioTotal + " Pesos");
-  console.log("Ahorras: " + ahorrado + " Pesos");
-  console.log("Iva= " + iva + " Pesos");
-  console.log("Precio total con IVA= " + precioIva + " Pesos");
+    if (seleccion < 1 || seleccion > catalogo.length) {
+      console.log("Seleccion no valida");
+      return;
+    }
+
+    let cantidad = Number(prompt("Indique la cantidad de productos que desea"));
+
+    if (cantidad <= 0) {
+      console.log("Cantidad no valida");
+      return;
+    }
+
+    let producto = catalogo[seleccion - 1];
+    carrito.push(
+      new Producto(
+        producto.nombre,
+        producto.precio,
+        cantidad,
+        producto.descuento
+      )
+    );
+    console.log(`Se aagrego ${cantidad} de ${producto.nombre} al carrito.`);
+
+    // Preguntar si desea agregar otro producto
+    let respuesta = prompt("Desea agregar un nuevo producto ? S/N");
+    if (respuesta.toLowerCase() === "n") {
+      alert("Gracias por su compra");
+      break;
+    }
+  }
+}
+agregarProductos();
+
+// Mostrar productos en el carrito.
+function mostrarCarrito() {
+  console.log("Productos en el carrito:");
+  carrito.forEach((producto) => {
+    console.log(
+      `${producto.cantidad} - ${producto.nombre} ${"Subtotal="} $${(
+        producto.precio * producto.cantidad
+      ).toFixed(2)} (${producto.descuento * 100}% de descuento)`
+    );
+  });
+  console.log(`Total a pagar es $${calcularTotalCarrito()}`);
+}
+
+mostrarCarrito();
+
+function calcularTotalCarrito() {
+  let total = 0;
+  carrito.forEach((producto) => {
+    total += producto.cantidad * producto.precio * (1 - producto.descuento);
+  });
+  return total.toFixed(2);
 }
